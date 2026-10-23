@@ -1,0 +1,32 @@
+# Simulation outputs
+*.vcd
+*.fst
+*.lxt
+*.vvp
+*.out
+
+# Icarus Verilog
+a.out
+
+# Verilator build
+obj_dir/
+
+# Waveform viewer
+*.gtkw
+
+# Synthesis outputs
+*.bit
+*.bin
+*.json
+*.blif
+*.asc
+*.rpt
+*.log
+
+# Editor / OS
+.vscode/
+*.swp
+*.swo
+*~
+Thumbs.db
+.DS_Store
