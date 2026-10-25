@@ -119,8 +119,8 @@ module bus_arbiter (
         rr_grant = next_grant;
         rr_found = 1'b0;
         for (i = 1; i <= 4; i = i + 1) begin
-            if (!rr_found && core_valid[(next_grant + i) % 4]) begin
-                rr_grant = (next_grant + i) % 4;
+            if (!rr_found && core_valid[next_grant + i[1:0]]) begin
+                rr_grant = next_grant + i[1:0];
                 rr_found = 1'b1;
             end
         end
