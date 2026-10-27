@@ -1,2 +1,0 @@
-Vmulti_core_top___024root__0__Slow.o: \
- Vmulti_core_top___024root__0__Slow.cpp Vmulti_core_top__pch.h

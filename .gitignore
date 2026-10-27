@@ -10,6 +10,7 @@ a.out
 
 # Verilator build
 obj_dir/
+obj_dir_intg/
 
 # Waveform viewer
 *.gtkw
