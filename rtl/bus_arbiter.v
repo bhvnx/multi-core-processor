@@ -50,6 +50,9 @@ module bus_arbiter (
     output wire        core3_mem_ready,
     output wire [31:0] core3_mem_rdata,
 
+    // --- Granted core index (for addr_decoder Core ID register) ---
+    output wire [ 1:0] grant_id,
+
     // --- Shared memory port ---
     output reg         mem_valid,
     output reg         mem_instr,
@@ -177,6 +180,8 @@ module bus_arbiter (
     assign core1_mem_ready = bus_busy && (grant == 2'd1) && mem_ready;
     assign core2_mem_ready = bus_busy && (grant == 2'd2) && mem_ready;
     assign core3_mem_ready = bus_busy && (grant == 2'd3) && mem_ready;
+
+    assign grant_id = grant;
 
     // rdata is broadcast; each core ignores it unless its own mem_ready is high
     assign core0_mem_rdata = mem_rdata;
