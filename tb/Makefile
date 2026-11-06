@@ -1,18 +1,24 @@
-# Makefile — Verilator testbenches for multi-core-processor blocks
+# Makefile — Testbenches for multi-core-processor blocks
 #
 # Usage:
 #   make                 — build and run bus_arbiter (default)
 #   make sram            — build and run sram
-#   make all             — build and run both
+#   make uart            — build and run uart (Icarus Verilog)
+#   make all             — build and run all blocks
 #   make build           — build bus_arbiter only
 #   make build_sram      — build sram only
+#   make build_uart      — build uart only
 #   make run             — run bus_arbiter only
 #   make run_sram        — run sram only
+#   make run_uart        — run uart only
 #   make wave            — open bus_arbiter waveform in GTKWave
 #   make wave_sram       — open sram waveform in GTKWave
+#   make wave_uart       — open uart waveform in GTKWave
 #   make clean           — remove build outputs
 
 VERILATOR  ?= verilator
+IVERILOG   ?= iverilog
+VVP        ?= vvp
 GTKWAVE    ?= gtkwave
 
 RTL_DIR    = ../rtl
@@ -53,13 +59,39 @@ INTG_OBJ   = obj_dir_intg
 INTG_EXE   = $(INTG_OBJ)/V$(INTG_TOP)
 INTG_VCD   = $(INTG_TOP).vcd
 
+# -----------------------------------------------------------------------
+# uart (Icarus Verilog — event-driven Verilog testbench)
+# The UART TB uses @(posedge clk), wait(), and fork which require a full
+# event-driven simulator; Verilator's C++ flow does not support these.
+# -----------------------------------------------------------------------
+UART_TOP   = uart
+UART_SRC   = $(RTL_DIR)/$(UART_TOP).v
+UART_TB    = $(TB_DIR)/uart_tb.v
+UART_EXE   = uart_tb.vvp
+UART_VCD   = uart.vcd
+
+build_uart: $(UART_EXE)
+
+$(UART_EXE): $(UART_SRC) $(UART_TB)
+	$(IVERILOG) -g2001 -I $(RTL_DIR) -o $(UART_EXE) $(UART_TB) $(UART_SRC)
+
+run_uart: $(UART_EXE)
+	$(VVP) $(UART_EXE)
+
+uart: build_uart run_uart
+
+wave_uart:
+	$(GTKWAVE) $(UART_VCD) &
+
+# -----------------------------------------------------------------------
 VFLAGS     = --cc --exe --build \
              -Wall \
              --trace \
              --top-module
 
-.PHONY: all build build_sram build_intg run run_sram run_intg \
-        sram intg wave wave_sram wave_intg clean
+.PHONY: all build build_sram build_intg build_uart \
+        run run_sram run_intg run_uart \
+        sram intg uart wave wave_sram wave_intg wave_uart clean
 
 # Default target: bus_arbiter
 all: build run build_sram run_sram
@@ -123,4 +155,5 @@ wave_intg:
 clean:
 	rm -rf $(ARB_OBJ) $(ARB_VCD) \
 	       $(SRAM_OBJ) $(SRAM_VCD) \
-	       $(INTG_OBJ) $(INTG_VCD)
+	       $(INTG_OBJ) $(INTG_VCD) \
+	       $(UART_EXE) $(UART_VCD)
